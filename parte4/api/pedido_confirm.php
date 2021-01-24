@@ -3,7 +3,7 @@
 	$response=new stdClass();
 
 	$codped=$_POST['codped'];
-	$sql="UPDATE pedido set estado=3
+	$sql="UPDATE pedido set estado=4
 	where codped=$codped";
 	$result=mysqli_query($con,$sql);
 	if ($result) {

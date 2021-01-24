@@ -28,14 +28,21 @@
 				</thead>				
 				<tbody>
 					<?php
-						$sql="SELECT ped.*,usu.*,pro.*,
-						CASE WHEN ped.estado=2 THEN 'Pendiente' ELSE 'Otro' END estadotexto
-						from pedido ped
-						inner  join usuario usu
-						on ped.codusu=usu.codusu
-						inner  join producto pro
-						on ped.codpro=pro.codpro
-						where ped.estado=2";
+							$sql="SELECT ped.*,usu.*,pro.*,
+							CASE WHEN ped.estado=2
+							THEN 'Por pagar'
+							ELSE 
+								CASE WHEN ped.estado=3
+									THEN 'Por entregar'
+									ELSE 'Otro'
+								END
+							END estadotexto
+							from pedido ped
+							inner  join usuario usu
+							on ped.codusu=usu.codusu
+							inner  join producto pro
+							on ped.codpro=pro.codpro
+							where ped.estado=2 or ped.estado=3";
 						$resultado=mysqli_query($con,$sql);
 						while ($row=mysqli_fetch_array($resultado)) {
 							echo 
