@@ -34,15 +34,19 @@
 							ELSE 
 								CASE WHEN ped.estado=3
 									THEN 'Por entregar'
-									ELSE 'Otro'
+									ELSE
+									CASE WHEN ped.estado=4
+										THEN 'En camino'
+										ELSE 'Otro'
+									END
 								END
-							END estadotexto
+							END estadotexto, ped.estado estadoped
 							from pedido ped
 							inner  join usuario usu
 							on ped.codusu=usu.codusu
 							inner  join producto pro
 							on ped.codpro=pro.codpro
-							where ped.estado=2 or ped.estado=3";
+							where ped.estado=2 or ped.estado=3 or ped.estado=4";
 						$resultado=mysqli_query($con,$sql);
 						while ($row=mysqli_fetch_array($resultado)) {
 							echo 
@@ -53,11 +57,20 @@
 						<td>'.$row['fecped'].'</td>
 						<td>'.$row['estadotexto'].'</td>
 						<td>'.$row['dirusuped'].'</td>
-						<td>'.$row['telusuped'].'</td>
-						<td class="td-option">
-							<button onclick="despachado('.$row['codped'].')">Despachado</button>
-						</td>
-					</tr>';
+						<td>'.$row['telusuped'].'</td>';
+						if ($row['estadoped']==4) {
+							echo
+						'<td class="td-option">
+							<button onclick="confirmar_entrega('.$row['codped'].')">Entregado</button>
+						</td>';	
+						}else{
+							echo
+						'<td class="td-option">
+							<button onclick="despachado('.$row['codped'].')">Despachar</button>
+						</td>';
+						}
+						echo
+					'</tr>';
 						}
 					?>
 				</tbody>
@@ -76,6 +89,24 @@
 			fd.append('codped',codped);
 			let request=new XMLHttpRequest();
 			request.open('POST','api/pedido_confirm.php',true);
+			request.onload=function(){
+				if (request.readyState==4 && request.status==200) {
+					let response=JSON.parse(request.responseText);
+					console.log(response);
+					if (response.state) {
+						window.location.reload();
+					}else{
+						alert(response.detail);
+					}
+				}
+			}
+			request.send(fd);
+		}
+		function confirmar_entrega(codped){
+			let fd=new FormData();
+			fd.append('codped',codped);
+			let request=new XMLHttpRequest();
+			request.open('POST','api/pedido_confirm_entrega.php',true);
 			request.onload=function(){
 				if (request.readyState==4 && request.status==200) {
 					let response=JSON.parse(request.responseText);

@@ -16,9 +16,13 @@
 		estado=$estado,prepro=$prepro,rutimapro='$nombre_imagen'
 		where codpro=$codpro";
 		$result=mysqli_query($con,$sql);
-		if ($result) {
+		if ($result) {			
+			//recuerda que debes redireccionar al nombre de proyecto correcto
+			// ejm: sistema-ecommerce-master
 			if(move_uploaded_file($_FILES['imagen']['tmp_name'], "../../sistema-ecommerce/assets/products/".$nombre_imagen)){
 				$response->state=true;
+				//recuerda que debes redireccionar al nombre de proyecto correcto
+				// ejm: sistema-ecommerce-master
 				unlink("../../sistema-ecommerce/assets/products/".$rutimapro);
 			}else{
 				$response->state=false;
